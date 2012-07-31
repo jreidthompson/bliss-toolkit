@@ -9,6 +9,9 @@ DRIVE="/dev/sda"
 # Drive that contains the Physical volume for LVM
 PV_DRIVE="/dev/sda2"
 
+# Boot Partition
+BOOT="/dev/sda1"
+
 VG_NAME="vg"
 
 LV="swap root portage var src home"
@@ -65,8 +68,6 @@ y)
 	wecho "Partprobing"
 	partprobe
 
-	wecho "Creating the partitions"
-	
 	# Create and label boot partition
 	wecho " Creating boot partition "
 	sgdisk -n 1:2048:+250M ${DRIVE}
@@ -103,6 +104,10 @@ lvcreate -L ${HOME_SIZE} -n ${HOME_NAME} ${VG_NAME}
 
 wecho "Formatting Partitions with ${FSTYPE}"
 
+# Format the boot drive
+mkfs.${FSTYPE} ${BOOT}
+
+# Format everything else
 for x in ${LV}; do
 	if [ "${x}" != "swap" ]; then
 		mkfs.${FSTYPE} /dev/${VG_NAME}/${x}

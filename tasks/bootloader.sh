@@ -14,6 +14,9 @@ DRIVE="/dev/sda"
 
 if [ ! -d "${PREFIX}/boot/${LDR_DIR}" ]; then
 	mkdir -p ${PREFIX}/boot/${LDR_DIR}
+else
+	rm -rf ${PREFIX}/boot/${LDR_DIR}
+	mkdir -p ${PREFIX}/boot/${LDR_DIR}
 fi
 
 # Install bootloader and copy config and menu file

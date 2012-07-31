@@ -3,6 +3,7 @@ v1.0.2
 - Fixed bug where bootloader wasn't installing because the extlinux dir
   wasn't being created.
 - Improved output of after install suggestions
+- Fixed bug where the boot drive wasn't being formatted
 
 v1.0.1
 -------

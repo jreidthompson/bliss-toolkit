@@ -7,5 +7,3 @@
 PREFIX="/mnt/gentoo"
 
 cp -f /etc/resolv.conf ${PREFIX}/etc
-
-exit

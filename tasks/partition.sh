@@ -49,7 +49,7 @@ clear
 case ${choice} in
 y)
 	# Make sure partitions are unmounted
-	./tasks/umount-all.sh
+	source tasks/umount-all.sh
 
 	# First we will remove any old lvm partition labels on the target lvm part
 	wecho "Removing old LVM labels from ${PV_DRIVE}"
@@ -111,5 +111,3 @@ for x in ${LV}; do
 done 
 
 wecho "Congratulations, your partitions are ready to be mounted!"
-
-exit

@@ -23,5 +23,3 @@ for x in ${MOUNTPOINTS}; do
 done
 
 swapoff /dev/vg/swap
-
-exit

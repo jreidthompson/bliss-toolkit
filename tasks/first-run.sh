@@ -20,5 +20,3 @@ for x in ${DEFAULT_DIRS}; do
 done
 
 umount ${PREFIX}
-
-exit

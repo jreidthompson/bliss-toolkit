@@ -25,8 +25,9 @@ FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/x86-64bit/generic_64/${S
 # Funtoo Portage
 PFLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/snapshots/${PORTAGE}"
 
-PREFIX="/mnt/gentoo"
 FILES_DIR="files"
+
+PREFIX="/mnt/gentoo"
 
 wecho "Checking to see if you have ${STAGE}"
 # Download Stage 3 and Portage
@@ -56,5 +57,3 @@ echo "your brand to point to funtoo.org."
 echo "Issue a 'git checkout funtoo.org'"
 
 wecho "Complete"
-
-exit

@@ -12,5 +12,3 @@ mount /dev/vg/home /mnt/gentoo/home
 mount /dev/sda1 /mnt/gentoo/boot
 
 swapon /dev/vg/swap
-
-exit

@@ -5,29 +5,29 @@
 # Distributed under the ISC license which can be found in the LICENSE file.
 
 # Import Functions
-. resources/functions_generic.sh
+source resources/functions_generic.sh
 
 # Partition
-./tasks/partition.sh
+source tasks/partition.sh
 
 if [ "${?}" -eq 0 ]; then
-	# Make directories to mount others
-	./tasks/first-run.sh
+        # Make directories to mount others
+        source tasks/first-run.sh
 
-	# Mount everything
-	./tasks/mount-all.sh
+        # Mount everything
+        source tasks/mount-all.sh
 
-	# Download & Install Stage3 & Portage
-	./tasks/install_it.sh
+        # Download & Install Stage3 & Portage
+        source tasks/install_it.sh
 
-	# Copy other stuff (like resolv.conf)
-	./tasks/cp_configs.sh
+        # Copy other stuff (like resolv.conf)
+        source tasks/cp_configs.sh
 
-	# Chroot into new install
-	./tasks/chroot.sh
+        # Chroot into new install
+        source tasks/chroot.sh
 else
-	echo "Error"
-	exit 1
+        echo "Error"
+        exit 1
 fi
 
 exit

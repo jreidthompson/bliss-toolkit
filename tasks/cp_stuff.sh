@@ -6,6 +6,8 @@
 
 PREFIX="/mnt/gentoo"
 
+wecho "Copying configurations and stage/portage .tar.xz to ${PREFIX}"
+
 # Copy over network config
 cp -f /etc/resolv.conf ${PREFIX}/etc
 

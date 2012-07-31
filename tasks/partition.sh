@@ -4,9 +4,6 @@
 #
 # Distributed under the ISC license which can be found in the LICENSE file.
 
-# Import functions
-. ../resources/functions_generic.sh
-
 DRIVE="/dev/sda"
 
 # Drive that contains the Physical volume for LVM
@@ -52,7 +49,7 @@ clear
 case ${choice} in
 y)
 	# Make sure partitions are unmounted
-	./umount-all.sh
+	./tasks/umount-all.sh
 
 	# First we will remove any old lvm partition labels on the target lvm part
 	wecho "Removing old LVM labels from ${PV_DRIVE}"

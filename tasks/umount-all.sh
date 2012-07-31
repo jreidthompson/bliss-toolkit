@@ -4,9 +4,6 @@
 #
 # Distributed under the ISC license which can be found in the LICENSE file.
 
-# Import Functions
-. ../resources/functions_generic.sh
-
 wecho "Unmounting Filesystems"
 
 MOUNTPOINTS="\

@@ -4,35 +4,33 @@
 #
 # Distributed under the ISC license which can be found in the LICENSE file.
 
-# Import functions
-. ../resources/functions_generic.sh
-
 # Installs Funtoo Linux
-
-# Funtoo Stable x64 Generic
-#FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-stable/x86-64bit/generic_64/stage3-latest.tar.xz"
-
-# Funtoo Current x64 Generic
-FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/x86-64bit/generic_64/stage3-latest.tar.xz"
-
-# Funtoo Stable x32 i686 
-#FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-stable/x86-32bit/i686/stage3-latest.tar.xz"
-
-# Funtoo Current x32 i686 
-#FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/x86-32bit/i686/stage3-latest.tar.xz"
-
-# Funtoo Portage
-PFLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/snapshots/portage-latest.tar.xz"
 
 # Stage/Portage file names
 STAGE="stage3-latest.tar.xz"
 PORTAGE="portage-latest.tar.xz"
 
+# Funtoo Stable x64 Generic
+#FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-stable/x86-64bit/generic_64/${STAGE}"
+
+# Funtoo Current x64 Generic
+FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/x86-64bit/generic_64/${STAGE}"
+
+# Funtoo Stable x32 i686 
+#FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-stable/x86-32bit/i686/${STAGE}"
+
+# Funtoo Current x32 i686 
+#FLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/x86-32bit/i686/${STAGE}"
+
+# Funtoo Portage
+PFLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/snapshots/${PORTAGE}"
+
 PREFIX="/mnt/gentoo"
+FILES_DIR="files"
 
 wecho "Checking to see if you have ${STAGE}"
 # Download Stage 3 and Portage
-if [ ! -f "${STAGE}" ]; then
+if [ ! -f "${FILES_DIR}/${STAGE}" ]; then
 	wecho "Downloading ${STAGE}"
 	wget ${FLAVOR}
 else
@@ -40,7 +38,7 @@ else
 fi
 
 wecho "Checking to see if you have ${PORTAGE}"
-if [ ! -f "${PORTAGE}" ]; then
+if [ ! -f "${FILES_DIR}/${PORTAGE}" ]; then
 	wecho "Downloading ${PORTAGE}"
 	wget ${PFLAVOR}
 else
@@ -49,9 +47,9 @@ fi
 
 # Extract Stage3 and Portage
 wecho "Extracting ${STAGE}"
-tar -xJpf ${STAGE} -C ${PREFIX}
+tar -xJpf ${FILES_DIR}/${STAGE} -C ${PREFIX}
 wecho "Extracting ${PORTAGE}"
-tar -xJf ${PORTAGE} -C ${PREFIX}/usr
+tar -xJf ${FILES_DIR}/${PORTAGE} -C ${PREFIX}/usr
 
 echo "After you chroot, go into the /usr/portage directory and set"
 echo "your brand to point to funtoo.org."

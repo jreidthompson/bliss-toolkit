@@ -7,9 +7,6 @@
 # Before you run the mount script, run this to create
 # the folders for the mountpoints to mount to
 
-# Import functions
-. ../resources/functions_generic.sh
-
 wecho "Creating default directories for mounting your filesystems to"
 
 PREFIX=/mnt/gentoo

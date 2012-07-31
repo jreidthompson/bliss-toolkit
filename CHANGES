@@ -1,0 +1,6 @@
+v1.0.1
+-------
+- Added extlinux bootloader support
+- Added my kernel configuration so people can have starting point
+- Added a default fstab to the installer
+- Installer now copies the stage3 and portage .tar.xz files to the new install

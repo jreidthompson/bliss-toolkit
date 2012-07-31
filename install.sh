@@ -21,7 +21,20 @@ if [ "${?}" -eq 0 ]; then
         source tasks/install_it.sh
 
         # Copy other stuff (like resolv.conf)
-        source tasks/cp_configs.sh
+        source tasks/cp_stuff.sh
+
+	# Install bootloader (if you want)
+	echo -n "Do you want to install the extlinux bootloader? [y/N]"
+	read choice
+
+	case ${choice} in
+	y)
+		source tasks/bootloader.sh
+		;;
+	*)
+		wecho "A bootloader will not be installed"
+		;;
+	esac
 
         # Chroot into new install
         source tasks/chroot.sh

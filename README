@@ -1,4 +1,4 @@
-Bliss Funtoo Installer v1.0.0
+Bliss Funtoo Installer v1.0.1
 Jonathan Vasquez <jvasquez1011@gmail.com>
 For Gentoo & Funtoo Linux
 
@@ -10,8 +10,9 @@ by default wipe /dev/sda.
 
 This script installs Funtoo Linux (by default) on your computer.
 
-It doesn't install a kernel/bootloader though, it literally just
-installs the stage3/portage and chroots you into the environment.
+It doesn't install a kernel but I've provides you with my personal minimal 
+kernel config for version 3.5.0. You most likely will need to tailor it for
+your environment. This is really the only 'major' thing you will need to do.
 
 The steps the script performs are as follows:
 
@@ -20,6 +21,7 @@ The steps the script performs are as follows:
 3. Mounts all of your partitions
 4. Downloads and Installs Funtoo (tasks/install_it.sh)
 5. Copies required configuration files (like resolve.conf)
-6. chroots into the new environment
+6. Install the extlinux bootloader (If you want)
+7. chroots into the new environment
 
 For more information/instructions check the USAGE file.

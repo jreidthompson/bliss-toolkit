@@ -44,10 +44,11 @@ FSTYPE="ext4"
 echo "This will delete your entire drive: ${DRIVE}"
 echo -n "Are you sure you want to do this? [y/N]"
 read choice
-clear
 
 case ${choice} in
 y)
+	clear
+
 	# Make sure partitions are unmounted
 	source tasks/umount-all.sh
 

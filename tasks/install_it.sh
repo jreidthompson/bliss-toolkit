@@ -52,10 +52,10 @@ tar -xJpf ${FILES_DIR}/${STAGE} -C ${PREFIX}
 wecho "Extracting ${PORTAGE}"
 tar -xJf ${FILES_DIR}/${PORTAGE} -C ${PREFIX}/usr
 
-wecho "After you chroot, go into the /usr/portage directory and set \
+wecho "After you chroot, go into the /usr/portage directory and set 
        your brand to point to funtoo.org. Issue a 'git checkout funtoo.org'."
 
-wecho "If you want to make an initramfs, you can clone my initramfs creator by \
+wecho "If you want to make an initramfs, you can clone my initramfs creator by 
        typing 'git clone git://github.com/fearedbliss/Bliss-Initramfs-Creator.git"
 
-wecho "Complete"
+wecho "Installation Complete!"

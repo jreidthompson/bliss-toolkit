@@ -1,0 +1,25 @@
+Bliss Funtoo Installer v1.0.0
+Jonathan Vasquez <jvasquez1011@gmail.com>
+For Gentoo & Funtoo Linux
+
+Distributed under the ISC license which can be found in the LICENSE file.
+
+DISCLAIMER: Before running the script, please check the tasks/partitions.sh
+file. You will be asked once if you want to format, if you say yes then it will
+by default wipe /dev/sda.
+
+This script installs Funtoo Linux (by default) on your computer.
+
+It doesn't install a kernel/bootloader though, it literally just
+installs the stage3/portage and chroots you into the environment.
+
+The steps the script performs are as follows:
+
+1. Partitions your machine automatically. (tasks/partitions.sh)
+2. Creates required directories which will be used to mount your partitions
+3. Mounts all of your partitions
+4. Downloads and Installs Funtoo (tasks/install_it.sh)
+5. Copies required configuration files (like resolve.conf)
+6. chroots into the new environment
+
+For more information/instructions check the USAGE file.

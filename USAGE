@@ -1,0 +1,47 @@
+First check and edit the partitions.sh file according to your specifications.
+Once you are done with that, just run the install.sh file and that's it.
+
+Just wait till it's done and you will be in the chroot environment ready to
+continue set up.
+
+The script also assumes you will be using the syslinux bootloader,
+thus a EF02 partition will not be made. If you want to use GRUB,
+just make another addition in the tasks/partitions.sh file and create the
+EF02 partition.
+
+##########################################################################
+DISCLAIMER: Before running the script, please check the tasks/partitions.sh 
+file. You will be asked once if you want to format, if you say yes then it will
+by default wipe /dev/sda.
+
+The default partition layout this script performs is as follows:
+(All of these values and partitions can be easily changed by editing
+ the tasks/partitions.sh file)
+
+GPT Layout
+
+/dev/sda1        /boot        250M        8300 (Linux Filesystem)
+/dev/sda2	 LVM          100%FREE    8E00 (Linux LVM)
+
+Volume Group name defaults to: vg
+
+/dev/vg/swap        swap          9G       
+/dev/vg/root	    /root 	  10G
+/dev/vg/portage     /usr/portage  10G
+/dev/vg/var         /usr/var      15G
+/dev/vg/src         /usr/src      10G
+/dev/vg/home        /home         20G
+
+All the partitions will be formatted ext4 (except for swap).
+This can be changed by editing the FSTYPE variable in tasks/partitions.sh
+
+##########################################################################
+
+You can pick which Funtoo you want (Stable or Current) by editing the URL
+in the tasks/install_it.sh file. Just comment the URL that is by default,
+and pick the URL you want from the list.
+
+##### For Gentoo Users #####
+If you want to use this script to install Gentoo, the only thing you need to do
+is add another line in the tasks/install_it.sh file that points to the Gentoo
+stage3 and Gentoo portage snapshot. Also edit the file name variables if needed.

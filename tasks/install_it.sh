@@ -33,7 +33,7 @@ wecho "Checking to see if you have ${STAGE}"
 # Download Stage 3 and Portage
 if [ ! -f "${FILES_DIR}/${STAGE}" ]; then
 	wecho "Downloading ${STAGE}"
-	wget ${FLAVOR}
+	wget -P ${FILES_DIR} ${FLAVOR}
 else
 	wecho "You already have ${STAGE} :)."
 fi
@@ -41,7 +41,7 @@ fi
 wecho "Checking to see if you have ${PORTAGE}"
 if [ ! -f "${FILES_DIR}/${PORTAGE}" ]; then
 	wecho "Downloading ${PORTAGE}"
-	wget ${PFLAVOR}
+	wget -P ${FILES_DIR} ${PFLAVOR}
 else
 	wecho "You already have ${PORTAGE} :)."
 fi

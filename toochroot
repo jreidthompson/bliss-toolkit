@@ -5,7 +5,7 @@
 # Distributed under the ISC license which can be found in the LICENSE file.
 
 # Import functions
-source ../resources/variables.sh
+source resources/variables.sh
 
 mount -o bind /proc ${PREFIX}/proc
 mount -o bind /dev ${PREFIX}/dev

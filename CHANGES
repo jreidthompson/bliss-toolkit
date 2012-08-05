@@ -1,3 +1,9 @@
+v1.0.3.1
+-------
+- Fixed a typo in the 'toochroot' file that wasn't finding variables.sh
+- v1.0.3 also included the sysrescd kernel config with ALSA/Camera stuff
+  enabled (I forgot to write it below.. but it's here now).
+
 v1.0.3
 -------
 - The installer has been broken into several independent scripts.

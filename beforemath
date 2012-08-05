@@ -7,13 +7,18 @@
 # Before you run the mount script, run this to create
 # the folders for the mountpoints to mount to
 
-wecho "Creating default directories for mounting your filesystems to"
+# Import functions
+source resources/variables.sh
+source resources/functions_generic.sh
 
-PREFIX=/mnt/gentoo
+# Check to see if a drive was given
+if [ -z ${1} ]; then
+	werr "A root wasn't passed to this script, exiting"
+fi
 
-mount /dev/vg/root ${PREFIX}
+wecho "Creating default directories"
 
-DEFAULT_DIRS="boot home var usr/portage usr/src"
+mount ${1} ${PREFIX}
 
 for x in ${DEFAULT_DIRS}; do
 	mkdir -p ${PREFIX}/${x}

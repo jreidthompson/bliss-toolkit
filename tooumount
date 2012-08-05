@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Copyright (C) 2012 Jonathan Vasquez <jvasquez1011@gmail.com>
+#
+# Distributed under the ISC license which can be found in the LICENSE file.
+
+# Import functions
+source resources/variables.sh
+source resources/functions_generic.sh
+
+wecho "Unmounting Filesystems"
+
+MOUNTPOINTS="
+/dev/${VG_NAME}/boot 
+/dev/${VG_NAME}/home 
+/dev/${VG_NAME}/var 
+/dev/${VG_NAME}/usr/src 
+/dev/${VG_NAME}/usr/portage
+proc
+dev
+sys
+"
+
+for x in ${MOUNTPOINTS}; do
+	if [ "${x}" == "proc" ] || 
+	   [ "${x}" == "dev" ]  || 
+	   [ "${x}" == "sys" ]; then
+		umount ${PREFIX}/${x}
+	else
+		umount ${x}
+	fi
+done
+
+umount ${PREFIX}
+
+swapoff /dev/vg/swap

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Copyright (C) 2012 Jonathan Vasquez <jvasquez1011@gmail.com>
+#
+# Distributed under the ISC license which can be found in the LICENSE file.
+
+# Import functions
+source resources/variables.sh
+source resources/functions_generic.sh
+
+wecho "Mounting Filesystems"
+
+VG_NAME="vg"
+
+MOUNTPOINTS="
+/dev/${VG_NAME}/boot 
+/dev/${VG_NAME}/home 
+/dev/${VG_NAME}/var 
+/dev/${VG_NAME}/usr/src 
+/dev/${VG_NAME}/usr/portage
+"
+
+mount /dev/${VG_NAME}/root
+
+for x in ${MOUNTPOINTS}; do
+	if [ "${x}" =~ "usr" ]; then
+		mount ${x} ${PREFIX}/usr/${x##*/}
+	else
+		mount ${x} ${PREFIX}/${x##*/}
+	fi
+done
+
+swapon /dev/vg/swap

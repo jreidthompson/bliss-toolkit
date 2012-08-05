@@ -4,9 +4,11 @@
 #
 # Distributed under the ISC license which can be found in the LICENSE file.
 
-PREFIX="/mnt/gentoo"
+# Import functions
+source resources/variables.sh
+source resources/functions_generic.sh
 
-wecho "Copying configurations and stage/portage .tar.xz to ${PREFIX}"
+wecho "Copying configurations, stage/portage, etc to ${PREFIX}"
 
 # Copy over network config
 cp -f /etc/resolv.conf ${PREFIX}/etc

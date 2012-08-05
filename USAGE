@@ -1,47 +1,59 @@
-First check and edit the partitions.sh file according to your specifications.
-Once you are done with that, just run the install.sh file and that's it.
+NOTE: The 'toomount', 'tooumount', 'beforemath', and 'aftermath' scripts 
+are optional. You can edit them and use them for your convenience and for
+your specific setup.
 
-Just wait till it's done and you will be in the chroot environment ready to
-continue set up.
+# If you aren't using the convenience scripts (manual mounting)
+1. Partition and mount your partitions
+2. Edit the PREFIX variable in 'resources/variables.sh' and make it point
+   to where you want to install Gentoo/Funtoo to.
+3. Run the 'toostrap' script, select the flavor you want, and wait.
+4. Run the 'aftermath' script to do post install stuff like copy network
+   settings and save a copy of your stage3/portage .tar files that you 
+   downloaded.
+5. Optional: If you want to install the extlinux bootloader, run the 
+   'extlinux-install' script.
+6. Chroot into your new install by running 'toochroot'
 
-The script also assumes you will be using the syslinux bootloader,
-thus a EF02 partition will not be made. If you want to use GRUB,
-just make another addition in the tasks/partitions.sh file and create the
-EF02 partition.
+# If you are using the convenience scripts (automatic mounting)
+1. Partition your drive
+2. Edit the PREFIX variable in 'resources/variables.sh' and make it point
+   to where you want to install Gentoo/Funtoo to.
+3. Edit the DEFAULT_DIRS variable and add the directories you would like
+   the 'beforemath' script to create (before automatically mounting).
+4. Run the 'beforemath' script
+5. Edit the 'toomount' script and make changes appropriate to your partition
+   layout. Then run the 'toomount' script.
+3. Run the 'toostrap' script, select the flavor you want, and wait.
+4. Run the 'aftermath' script to do post install stuff like copy network
+   settings and save a copy of your stage3/portage .tar files that you 
+   downloaded.
+5. Optional: If you want to install the extlinux bootloader, run the 
+   'extlinux-install' script.
+6. Chroot into your new install by running 'toochroot'
+7. After you are done you can exit the chroot environment and quickly
+   unmount your partitions by editing and running the 'tooumount' script.
 
-##########################################################################
-DISCLAIMER: Before running the script, please check the tasks/partitions.sh 
-file. You will be asked once if you want to format, if you say yes then it will
-by default wipe /dev/sda.
+# More info
+After that is set, just run 'toostrap' and select the flavor you want
+from the menu. If you already know what you want, then just pass that
+number via the cli.
 
-The default partition layout this script performs is as follows:
-(All of these values and partitions can be easily changed by editing
- the tasks/partitions.sh file)
+Example: (These are the options the menu gives you)
+	1. Gentoo [i686]
+	2. Gentoo [x64]
+	3. Funtoo Stable [i686]
+	4. Funtoo Stable [x64]
+	5. Funtoo Current [i686]
+	6. Funtoo Current [x64]
+	7. Exit
 
-GPT Layout
+If you wanted to install Gentoo x64, you just do 'toostrap 2' and that's it.
+If you wanted Funtoo Current i686, you just do 'toostrap 5' and that's it.
 
-/dev/sda1        /boot        250M        8300 (Linux Filesystem)
-/dev/sda2	 LVM          100%FREE    8E00 (Linux LVM)
+After the script finishes downloading and extract the stage/portage files,
+you should run 'aftermath' so that it copies your network settings and also
+the stage/portage files and other configuration files to your system.
 
-Volume Group name defaults to: vg
+After that is complete you can chroot to your new system by typing 'toochroot'. 
 
-/dev/vg/swap        swap          9G       
-/dev/vg/root	    /root 	  10G
-/dev/vg/portage     /usr/portage  10G
-/dev/vg/var         /usr/var      15G
-/dev/vg/src         /usr/src      10G
-/dev/vg/home        /home         20G
-
-All the partitions will be formatted ext4 (except for swap).
-This can be changed by editing the FSTYPE variable in tasks/partitions.sh
-
-##########################################################################
-
-You can pick which Funtoo you want (Stable or Current) by editing the URL
-in the tasks/install_it.sh file. Just comment the URL that is by default,
-and pick the URL you want from the list.
-
-##### For Gentoo Users #####
-If you want to use this script to install Gentoo, the only thing you need to do
-is add another line in the tasks/install_it.sh file that points to the Gentoo
-stage3 and Gentoo portage snapshot. Also edit the file name variables if needed.
+If you want to install the extlinux bootloader, run 'extlinux-install' before chrooting.

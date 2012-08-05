@@ -4,13 +4,20 @@
 #
 # Distributed under the ISC license which can be found in the LICENSE file.
 
-# Install extlinux bootloader
+# Import functions
+source resources/variables.sh
+source resources/functions_generic.sh
 
+# Check to see if a drive was given
+if [ -z ${1} ]; then
+	err "A drive wasn't passed to this script, exiting"
+fi
+
+# Install extlinux bootloader
 wecho "Installing extlinux bootloader"
 
-PREFIX="/mnt/gentoo"
 LDR_DIR="extlinux" # Loader Directory
-DRIVE="/dev/sda"
+DRIVE="${1}"
 
 if [ ! -d "${PREFIX}/boot/${LDR_DIR}" ]; then
 	mkdir -p ${PREFIX}/boot/${LDR_DIR}

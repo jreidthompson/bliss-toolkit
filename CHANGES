@@ -1,3 +1,18 @@
+v1.0.3
+-------
+- The installer has been broken into several independent scripts.
+  This increases the flexibility and doesn't force people to use the
+  partitioning scripts I provided before. Now if you just want to use
+  some parts of these scripts, you can. Want to install just the bootloader?
+  Want to just download your desired Gentoo/Funtoo flavor? Now you can.
+- Added a few more helper functions, variables to make things easier
+- Added the ability to pick the desired Gentoo/Funtoo flavor through a menu
+- Application has been renamed to "Bliss Toolkit" to signify the switch from
+  an "installer" to just a set of scripts.
+- Main script files have been renamed to "toostrap", "toochroot", 
+  "extlinux-install". The switch to a set of scripts idea and names were 
+  inspired from Arch Linux.
+
 v1.0.2
 -------
 - Fixed bug where bootloader wasn't installing because the extlinux dir

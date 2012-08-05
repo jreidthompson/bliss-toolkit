@@ -1,27 +1,25 @@
-Bliss Funtoo Installer v1.0.2
+Bliss Toolkit v1.0.3
 Jonathan Vasquez <jvasquez1011@gmail.com>
 For Gentoo & Funtoo Linux
 
 Distributed under the ISC license which can be found in the LICENSE file.
 
-DISCLAIMER: Before running the script, please check the tasks/partitions.sh
-file. You will be asked once if you want to format, if you say yes then it will
-by default wipe /dev/sda.
+These are a set of scripts that facilitates installing Gentoo or Funtoo Linux
+on your computer.
 
-This script installs Funtoo Linux (by default) on your computer.
+I've provided the default sysresccd kernel config with ALSA/Video stuff enabled.
+(Not everything was enabled but Intel HD Audio was).
 
-It doesn't install a kernel but I've provides you with my personal minimal 
-kernel config for version 3.5.0. You most likely will need to tailor it for
-your environment. This is really the only 'major' thing you will need to do.
+Included scripts:
 
-The steps the script performs are as follows:
-
-1. Partitions your machine automatically. (tasks/partitions.sh)
-2. Creates required directories which will be used to mount your partitions
-3. Mounts all of your partitions
-4. Downloads and Installs Funtoo (tasks/install_it.sh)
-5. Copies required configuration files (like resolve.conf)
-6. Install the extlinux bootloader (If you want)
-7. chroots into the new environment
+1. 'beforemath' - Creates base directories (like home, boot, if you use)
+2. 'toomount' - Mounts directories to PREFIX
+3. 'toostrap' - Asks you which Gentoo/Funtoo stage you want, and it downloads
+   it with the corresponding latest portage. It then extracts it into the
+   target PREFIX declared in resources/variables.sh
+4. 'aftermath' - Copies network config, kernel config, fstab, etc, to PREFIX
+5. 'extlinux-install' - Installs the extlinux bootloader to the passed drive
+6. 'toochroot' - Cleanly chroots into the PREFIX
+7. 'tooumount' - Umounts directories in PREFIX
 
 For more information/instructions check the USAGE file.

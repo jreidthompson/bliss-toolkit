@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Copyright (C) 2012 Jonathan Vasquez <jvasquez1011@gmail.com>
+#
+# Distributed under the ISC license which can be found in the LICENSE file.
+
+# Import functions
+source ../resources/variables.sh
+
+mount -o bind /proc ${PREFIX}/proc
+mount -o bind /dev ${PREFIX}/dev
+mount -o bind /sys ${PREFIX}/sys
+
+env -i HOME=/root TERM=$TERM chroot ${PREFIX} /bin/bash --login

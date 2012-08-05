@@ -9,7 +9,7 @@ source resources/variables.sh
 source resources/functions_generic.sh
 
 # Check to see if a drive was given
-if [ -z ${1} ]; then
+if [[ -z "${1}" ]]; then
 	err "A drive wasn't passed to this script, exiting"
 fi
 
@@ -19,7 +19,7 @@ wecho "Installing extlinux bootloader"
 LDR_DIR="extlinux" # Loader Directory
 DRIVE="${1}"
 
-if [ ! -d "${PREFIX}/boot/${LDR_DIR}" ]; then
+if [[ ! -d "${PREFIX}/boot/${LDR_DIR}" ]]; then
 	mkdir -p ${PREFIX}/boot/${LDR_DIR}
 else
 	rm -rf ${PREFIX}/boot/${LDR_DIR}

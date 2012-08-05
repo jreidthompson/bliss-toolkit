@@ -38,21 +38,21 @@ get_latest()
 
 	local FILE="latest-stage3.txt"
 	
-	if [ "${1}" -eq 1 ]; then
+	if [[ "${1}" -eq 1 ]]; then
 		local URL="http://mirror.rit.edu/gentoo/releases/x86/autobuilds/${FILE}"
-	elif [ "${1}" -eq 2 ]; then
+	elif [[ "${1}" -eq 2 ]]; then
 		local URL="http://mirror.rit.edu/gentoo/releases/amd64/autobuilds/${FILE}"
 	else
 		err "There was a problem checking which Gentoo you wanted"
 	fi
 
-	if [ ! -f "${FILE}" ]; then
+	if [[ ! -f "${FILE}" ]]; then
 		wget ${URL}
 	fi
 
-	if [ "${1}" -eq 1 ]; then
+	if [[ "${1}" -eq 1 ]]; then
 		local t=$(sed -n '4p' ${FILE})
-	elif [ "${1}" -eq 2 ]; then
+	elif [[ "${1}" -eq 2 ]]; then
 		local t=$(sed -n '3p' ${FILE})
 	else
 		err "There was a problem checking which Gentoo you wanted"
@@ -94,7 +94,7 @@ menu_stage()
 	PORTAGE="portage-latest.tar.xz"
 
 	# Check to see if a menu option was passed
-	if [ -z "${choice}" ]; then
+	if [[ -z "${choice}" ]]; then
 		echo "Which flavor do you want to install:"
 		print_options
 		eline

@@ -1,3 +1,8 @@
+v1.0.4
+-------
+- Fixed errors in mount/umount scripts
+- All tests [ ] have been switched to bash double brackets [[ ]]
+
 v1.0.3.1
 -------
 - Fixed a typo in the 'toochroot' file that wasn't finding variables.sh

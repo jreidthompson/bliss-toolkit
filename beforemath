@@ -12,7 +12,7 @@ source resources/variables.sh
 source resources/functions_generic.sh
 
 # Check to see if a drive was given
-if [ -z ${1} ]; then
+if [[ -z "${1}" ]]; then
 	werr "A root wasn't passed to this script, exiting"
 fi
 

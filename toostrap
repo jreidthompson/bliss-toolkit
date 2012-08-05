@@ -9,7 +9,7 @@ source resources/variables.sh
 source resources/functions_generic.sh
 
 # Check to see if a choice was passed
-if [ ! -z "${1}" ]; then
+if [[ ! -z "${1}" ]]; then
 	case ${1} in
 	1|2|3|4|5|6|7) 
 		choice=${1}
@@ -31,7 +31,7 @@ menu_stage
 wecho "Checking to see if you have ${STAGE}"
 
 # Download Stage 3 and Portage
-if [ ! -f "${FILESDIR}/${STAGE}" ]; then
+if [[ ! -f "${FILESDIR}/${STAGE}" ]]; then
 	wecho "Downloading ${STAGE}"
 	wget -P ${FILESDIR} ${FLAVOR}
 else
@@ -39,7 +39,7 @@ else
 fi
 
 wecho "Checking to see if you have ${PORTAGE}"
-if [ ! -f "${FILESDIR}/${PORTAGE}" ]; then
+if [[ ! -f "${FILESDIR}/${PORTAGE}" ]]; then
 	wecho "Downloading ${PORTAGE}"
 	wget -P ${FILESDIR} ${PFLAVOR}
 else
@@ -54,9 +54,9 @@ tar -xf ${FILESDIR}/${PORTAGE} -C ${PREFIX}/usr
 
 # Decides and prints messages for specific flavor set in MESSAGE
 
-if [ "${MESSAGE}" == "Gentoo" ]; then
+if [[ "${MESSAGE}" == "Gentoo" ]]; then
 	wecho "Congratulations on your new ${MESSAGE} setup!"
-elif [ "${MESSAGE}" == "Funtoo" ]; then
+elif [[ "${MESSAGE}" == "Funtoo" ]]; then
 	wecho "Congratulations on your new ${MESSAGE} setup!"
 	wecho "After you chroot, go into the /usr/portage directory and set 
 	       your branch to point to funtoo.org. Issue a 'git checkout funtoo.org'."

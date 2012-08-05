@@ -13,21 +13,24 @@ wecho "Mounting Filesystems"
 VG_NAME="vg"
 
 MOUNTPOINTS="
-/dev/${VG_NAME}/boot 
-/dev/${VG_NAME}/home 
-/dev/${VG_NAME}/var 
-/dev/${VG_NAME}/usr/src 
-/dev/${VG_NAME}/usr/portage
+/dev/${VG_NAME}/root
+/dev/${VG_NAME}/home
+/dev/${VG_NAME}/var
+/dev/${VG_NAME}/src
+/dev/${VG_NAME}/portage
 "
 
-mount /dev/${VG_NAME}/root
-
 for x in ${MOUNTPOINTS}; do
-	if [ "${x}" =~ "usr" ]; then
-		mount ${x} ${PREFIX}/usr/${x##*/}
-	else
-		mount ${x} ${PREFIX}/${x##*/}
-	fi
+        if [[ "${x}" =~ "root" ]]; then
+                mount ${x} ${PREFIX}
+        elif [[ "${x}" =~ "src" ]] ||
+             [[ "${x}" =~ "portage" ]]; then
+                mount ${x} ${PREFIX}/usr/${x##*/}
+        else
+                mount ${x} ${PREFIX}/${x##*/}
+        fi
 done
+
+mount /dev/sda1 ${PREFIX}/boot
 
 swapon /dev/vg/swap

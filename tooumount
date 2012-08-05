@@ -10,27 +10,28 @@ source resources/functions_generic.sh
 
 wecho "Unmounting Filesystems"
 
+VG_NAME="vg"
+
 MOUNTPOINTS="
-/dev/${VG_NAME}/boot 
-/dev/${VG_NAME}/home 
-/dev/${VG_NAME}/var 
-/dev/${VG_NAME}/usr/src 
-/dev/${VG_NAME}/usr/portage
 proc
 dev
 sys
+/dev/sda1
+/dev/${VG_NAME}/home
+/dev/${VG_NAME}/var
+/dev/${VG_NAME}/src
+/dev/${VG_NAME}/portage
+/dev/${VG_NAME}/root
 "
 
 for x in ${MOUNTPOINTS}; do
-	if [ "${x}" == "proc" ] || 
-	   [ "${x}" == "dev" ]  || 
-	   [ "${x}" == "sys" ]; then
-		umount ${PREFIX}/${x}
-	else
-		umount ${x}
-	fi
+        if [[ "${x}" == "proc" ]] ||
+           [[ "${x}" == "dev" ]]  ||
+           [[ "${x}" == "sys" ]]; then
+                umount ${PREFIX}/${x}
+        else
+                umount ${x}
+        fi
 done
-
-umount ${PREFIX}
 
 swapoff /dev/vg/swap

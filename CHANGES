@@ -1,3 +1,7 @@
+v1.0.5
+-------
+- Changed the URL of Funtoo's 'portage-latest' to a new and working location.
+
 v1.0.4
 -------
 - Fixed errors in mount/umount scripts

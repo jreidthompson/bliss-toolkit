@@ -111,7 +111,7 @@ menu_stage()
 	3|4|5|6)
 		MESSAGE="Funtoo"
 		STAGE="stage3-latest.tar.xz"
-		PFLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-current/snapshots/${PORTAGE}"
+		PFLAVOR="http://ftp.osuosl.org/pub/funtoo/funtoo-experimental/snapshots/${PORTAGE}"
 		;;
 	7)
 		wecho "Exiting" && exit

@@ -31,6 +31,8 @@ for x in ${MOUNTPOINTS}; do
         fi
 done
 
+# Mount the /boot partition
 mount /dev/sda1 ${PREFIX}/boot
 
+# Turn on swap
 swapon /dev/vg/swap

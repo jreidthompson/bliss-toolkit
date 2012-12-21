@@ -7,7 +7,7 @@ JV_APP_NAME="Bliss Toolkit"
 JV_AUTHOR="Jonathan Vasquez"
 JV_EMAIL="jvasquez1011@gmail.com"
 JV_CONTACT="${JV_AUTHOR} <${JV_EMAIL}>"
-JV_VERSION="1.0.4"
+JV_VERSION="1.0.6"
 JV_LICENSE="ISC"
 
 # Locations

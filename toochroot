@@ -7,8 +7,8 @@
 # Import functions
 source resources/variables.sh
 
-mount -o bind /proc ${PREFIX}/proc
-mount -o bind /dev ${PREFIX}/dev
-mount -o bind /sys ${PREFIX}/sys
+mount --bind /proc ${PREFIX}/proc
+mount --bind /dev ${PREFIX}/dev
+mount --bind /sys ${PREFIX}/sys
 
 env -i HOME=/root TERM=$TERM chroot ${PREFIX} /bin/bash --login

@@ -10,7 +10,8 @@ your specific setup.
 4. Run the 'aftermath' script to do post install stuff like copy network
    settings and save a copy of your stage3/portage .tar files that you 
    downloaded.
-5. Optional: If you want to install the extlinux bootloader, run the 
+5. Optional (only for gpt layout, you can modify script to mbr): 
+   If you want to install the extlinux bootloader, run the 
    'extlinux-install' script.
 6. Chroot into your new install by running 'toochroot'
 
@@ -27,7 +28,8 @@ your specific setup.
 4. Run the 'aftermath' script to do post install stuff like copy network
    settings and save a copy of your stage3/portage .tar files that you 
    downloaded.
-5. Optional: If you want to install the extlinux bootloader, run the 
+5. Optional (only for gpt layout, you can modify script to mbr): 
+   If you want to install the extlinux bootloader, run the 
    'extlinux-install' script.
 6. Chroot into your new install by running 'toochroot'
 7. After you are done you can exit the chroot environment and quickly

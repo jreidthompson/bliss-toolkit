@@ -1,3 +1,11 @@
+v1.0.6
+-------
+- Removes 'i' attribute from ldlinux.sys so the script can delete the old
+  extlinux directory if it exists (when installing the bootloader again).
+- Added a few more comments to some parts of the code for clarity
+- Added a new 'extlinux.conf'
+- Cleared up some of the documentation in the 'USAGE' file
+
 v1.0.5
 -------
 - Changed the URL of Funtoo's 'portage-latest' to a new and working location.

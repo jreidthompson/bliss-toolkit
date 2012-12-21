@@ -22,6 +22,7 @@ DRIVE="${1}"
 if [[ ! -d "${PREFIX}/boot/${LDR_DIR}" ]]; then
 	mkdir -p ${PREFIX}/boot/${LDR_DIR}
 else
+	chattr -i ${PREFIX}/boot/${LDR_DIR}/ldlinux.sys
 	rm -rf ${PREFIX}/boot/${LDR_DIR}
 	mkdir -p ${PREFIX}/boot/${LDR_DIR}
 fi

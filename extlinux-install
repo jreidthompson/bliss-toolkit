@@ -1,40 +1,41 @@
 #!/bin/bash
 
-# Copyright (C) 2012 Jonathan Vasquez <jvasquez1011@gmail.com>
+# Copyright 2012-2015 Jonathan Vasquez <jvasquez1011@gmail.com>
 #
-# Distributed under the ISC license which can be found in the LICENSE file.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Import functions
-source resources/variables.sh
-source resources/functions_generic.sh
+Drive=$1
+ChrootDir=$2
 
 # Check to see if a drive was given
-if [[ -z "${1}" ]]; then
-	err "A drive wasn't passed to this script, exiting"
+if [[ -z "${Drive}" ]] || [[ -z "${ChrootDir}" ]]; then
+    echo "Usage: extlinux-install <drive> <target dir>"
+    exit 1
 fi
 
 # Install extlinux bootloader
-wecho "Installing extlinux bootloader"
+echo "Installing extlinux bootloader"
 
-LDR_DIR="extlinux" # Loader Directory
-DRIVE="${1}"
+# Bootloader Directory
+LoaderDir="${ChrootDir}/boot/extlinux"
 
-if [[ ! -d "${PREFIX}/boot/${LDR_DIR}" ]]; then
-	mkdir -p ${PREFIX}/boot/${LDR_DIR}
-else
-	chattr -i ${PREFIX}/boot/${LDR_DIR}/ldlinux.sys
-	rm -rf ${PREFIX}/boot/${LDR_DIR}
-	mkdir -p ${PREFIX}/boot/${LDR_DIR}
+if [[ -d "${LoaderDir}" ]]; then
+    chattr -i ${LoaderDir}/ldlinux.sys
+    rm -rf ${LoaderDir}
 fi
 
-# Install bootloader and copy config and menu file
-extlinux --install ${PREFIX}/boot/${LDR_DIR}
+mkdir -p ${LoaderDir}
 
-cp -f resources/configs/extlinux.conf ${PREFIX}/boot/${LDR_DIR}
-cp -f /usr/share/syslinux/menu.c32 ${PREFIX}/boot/${LDR_DIR}
+# Install bootloader and copy config and menu file
+extlinux --install ${LoaderDir}
+
+cp -f resources/configs/extlinux.conf ${LoaderDir}
+cp -f /usr/share/syslinux/menu.c32 ${LoaderDir}
 
 # Set BIOS Legacy Flag
-sgdisk ${DRIVE} --attributes=1:set:2
+sgdisk ${Drive} --attributes=1:set:2
 
 # Flash GPT/MBR file to drive
-dd conv=notrunc bs=440 count=1 if=/usr/share/syslinux/gptmbr.bin of=${DRIVE}
+dd if=/usr/share/syslinux/gptmbr.bin of=${Drive}

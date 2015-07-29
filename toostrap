@@ -1,70 +1,332 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-# Copyright (C) 2012 Jonathan Vasquez <jvasquez1011@gmail.com>
+# Copyright 2012-2015 Jonathan Vasquez <jvasquez1011@gmail.com>
 #
-# Distributed under the ISC license which can be found in the LICENSE file.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Import functions
-source resources/variables.sh
-source resources/functions_generic.sh
+import os
+import sys
+from subprocess import call
+from subprocess import check_output
+from datetime import datetime
+from datetime import timedelta
 
-# Check to see if a choice was passed
-if [[ ! -z "${1}" ]]; then
-	case ${1} in
-	1|2|3|4|5|6|7) 
-		choice=${1}
-		;;
-	*)
-		print_options
-		err "Invalid choice, must be between 1-7. Exiting."
-		;;
-	esac
-fi
+class Strapper:
+    def __init__(self):
+        # Application Info
+        self._appName = "Bliss Toolkit"
+        self._author = "Jonathan Vasquez"
+        self._email = "jvasquez1011@gmail.com"
+        self._contact =  self._author + " <" + self._email + ">"
+        self._version = "2.0.0"
+        self._license = "Mozilla Public License 2.0"
 
-# Print header
-print_header
+        self._paramUtil = ParameterUtility()
+        self._paramUtil.ParseParameters()
+        self._installDir = self._paramUtil.GetChrootDir()
 
-# Get the flavor you want
-menu_stage
+        self._home = os.getcwd()
+        self._filesDir = self._home + "/files"
 
-# Let the games begin
-wecho "Checking to see if you have ${STAGE}"
+        self._desiredFlavor = "0"
+        self._defaultFlavor = "1" # Gentoo [x86_64]
 
-# Download Stage 3 and Portage
-if [[ ! -f "${FILESDIR}/${STAGE}" ]]; then
-	wecho "Downloading ${STAGE}"
-	wget -P ${FILESDIR} ${FLAVOR}
-else
-	wecho "You already have ${STAGE} :)."
-fi
+        self._portageFileName = "portage-latest.tar.xz"
+        self._portageUrl = "http://distfiles.gentoo.org/releases/snapshots/current/" + self._portageFileName
+        self._portageFilePath = self._filesDir + "/" + self._portageFileName
+        self._portageChrootTargetDir = self._installDir + "/usr"
 
-wecho "Checking to see if you have ${PORTAGE}"
-if [[ ! -f "${FILESDIR}/${PORTAGE}" ]]; then
-	wecho "Downloading ${PORTAGE}"
-	wget -P ${FILESDIR} ${PFLAVOR}
-else
-	wecho "You already have ${PORTAGE} :)."
-fi
+        self._latestStageTextFileName = "latest-stage3.txt"
+        self._latestStageTextFilePath = self._filesDir + "/" + self._latestStageTextFileName
 
-# Extract Stage3 and Portage
-wecho "Extracting ${STAGE}"
-tar -xpf ${FILESDIR}/${STAGE} -C ${PREFIX}
-wecho "Extracting ${PORTAGE}"
-tar -xf ${FILESDIR}/${PORTAGE} -C ${PREFIX}/usr
+        self._stageArch = ""
+        self._latestStageName = ""
+        self._latestStageDate = ""
+        self._latestStageDateAndName = ""
+        self._latestStageFilePath = ""
 
-# Decides and prints messages for specific flavor set in MESSAGE
+    def GetDesiredFlavor(self):
+        return self._desiredFlavor
 
-if [[ "${MESSAGE}" == "Gentoo" ]]; then
-	wecho "Congratulations on your new ${MESSAGE} setup!"
-elif [[ "${MESSAGE}" == "Funtoo" ]]; then
-	wecho "Congratulations on your new ${MESSAGE} setup!"
-	wecho "After you chroot, go into the /usr/portage directory and set 
-	       your branch to point to funtoo.org. Issue a 'git checkout funtoo.org'."
-else
-	wecho "Error detecting what messages to display.. skipping"
-fi
+    def SetDesiredFlavor(self, desiredFlavor):
+        self._desiredFlavor = desiredFlavor
 
-wecho "If you want to make an initramfs, you can clone my initramfs creator by 
-       typing 'git clone git://github.com/fearedbliss/Bliss-Initramfs-Creator.git"
+    def SetStageArchitecture(self, stageArch):
+        self._stageArch = stageArch
 
-wecho "Installation Complete!"
+    def GetStageArchitecture(self):
+        return self._stageArch
+
+    def Main(self):
+        self.PrintHeader()
+        self.GetDesiredFlavorFromUser()
+        self.DownloadFileIfNecessary(self.CalculateLatestStage(), self._latestStageName)
+        self.CheckAndDeleteIfPortageIsOld()
+        self.DownloadFileIfNecessary(self._portageUrl, self._portageFileName)
+        self.VerifyInstallDirectoryExists()
+        self.ExtractStage()
+        self.ExtractPortage()
+        self.CongratulateUser()
+
+    def PrintMenu(self):
+        Tools.Print(Tools.Colorize("green", "Stable"))
+        print("1. Gentoo [x86_64]")
+
+    # Description:
+    # Message that will be displayed at the top of the screen
+    def PrintHeader(self):
+        print("-----------------------------------")
+        Tools.Print(Tools.Colorize("yellow", self._appName) + " - " + Tools.Colorize("pink", "v" + self._version))
+        Tools.Print(self._contact)
+        Tools.Print(self._license)
+        print("-----------------------------------")
+        Tools.NewLine()
+
+    # Description:
+    # Prompts the user for the flavor of Gentoo that they would like to install
+    def GetDesiredFlavorFromUser(self):
+        self._desiredFlavor = self._paramUtil.GetChoice()
+
+        if not self._desiredFlavor:
+            print("What flavor of Gentoo do you want?\n")
+
+            self.PrintMenu()
+            self._desiredFlavor = Tools.Question("\nDesired Flavor [1]: ")
+
+            if not self._desiredFlavor:
+                self._desiredFlavor = self._defaultFlavor
+
+            Tools.NewLine()
+
+        if self._desiredFlavor == "1":
+            self._stageArch = "amd64"
+        else:
+            Tools.Fail("Invalid Option. Exiting.")
+
+    # Description:
+    # Checks to see if the portage file is old. If it is, we will remove it so that a new one can be downloaded.
+    def CheckAndDeleteIfPortageIsOld(self):
+        if self.IsPortageFileOld():
+            os.remove(self._portageFilePath)
+
+    # Description:
+    # This just downloads the latest stage3 text file and figures out what the url is for
+    # actually getting the latest stage3.
+    #
+    # Returns:
+    # The url for the latest stage3
+    def CalculateLatestStage(self):
+        # Set the url prefix for where the latest stage 3 text file is located
+        if self._desiredFlavor == "1":
+            urlPrefix = "http://distfiles.gentoo.org/releases/amd64/autobuilds/"
+        else:
+            exit()
+
+        url = urlPrefix + self._latestStageTextFileName
+
+        if os.path.exists(self._latestStageTextFilePath):
+            # If file is relatively new, then re-use the file to prevent
+            # unnecessary downloads from the main Gentoo server.
+            if self.IsStageTextFileStale():
+                os.remove(self._latestStageTextFilePath)
+                call(["wget", "--directory-prefix", self._filesDir, url])
+        else:
+            call(["wget", "--directory-prefix", self._filesDir, url])
+
+        self._latestStageDateAndName = self.ParseLatestStageDateAndName()
+
+        return urlPrefix + self._latestStageDateAndName
+
+    # Description:
+    # Parses the latest stage3 text file in order to discover what directory and stage name
+    # the latest stage has.
+    #
+    # Returns:
+    # A string containing the date and stage name of the latest stage.
+    def ParseLatestStageDateAndName(self):
+        cmd = 'grep "stage3-' + self._stageArch + '-[0-9]*.tar.bz2" ' + self._latestStageTextFilePath + ' | cut -d " " -f 1'
+        r = check_output(cmd, shell=True, universal_newlines=True).strip()
+
+        parts = r.split("/")
+        self._latestStageDate = parts[0]
+        self._latestStageName = parts[1]
+        self._latestStageFilePath = self._filesDir + "/" + self._latestStageName
+
+        Tools.Print("Stage Date: " + Tools.Colorize("red", self._latestStageDate) + "\n")
+
+        return r
+
+    # Description:
+    # Calculates whether or not the latest-stage3.txt file is stale.
+    #
+    # Returns:
+    # True if it is stale
+    # False if it isn't
+    def IsStageTextFileStale(self):
+        return self.IsFileOlderThanCutOffDate(self._latestStageTextFilePath, 1)
+
+    # Description:
+    # Calculates whether or not the portage-latest.xz file is old
+    #
+    # Returns:
+    # True if it is
+    # False if it isn't
+    def IsPortageFileOld(self):
+        return self.IsFileOlderThanCutOffDate(self._portageFilePath, 7)
+
+    # Description:
+    # Calculates whether or not the file is older than the number of days
+    #
+    # Returns:
+    # True if it is older
+    # False if it isn't
+    def IsFileOlderThanCutOffDate(self, filePath, numberOfDays):
+        cutOffDate = datetime.now() - timedelta(days=numberOfDays)
+        stageTextFileDate = datetime.fromtimestamp(os.path.getmtime(filePath))
+        return stageTextFileDate < cutOffDate
+
+    # Description:
+    # Downloads the file from the target url if the file doesn't already exist
+    def DownloadFileIfNecessary(self, url, fileName):
+        filePath = self._filesDir + "/" + fileName
+
+        if not os.path.exists(filePath):
+            call(["wget", "--directory-prefix", self._filesDir, url])
+
+    # Description:
+    # Verifies that the install directory exists
+    def VerifyInstallDirectoryExists(self):
+        if not os.path.exists(self._installDir):
+            Tools.Fail("The installation directory does not exist. Please create and try again.")
+
+    # Description:
+    # Extracts the stage file into the installation directory
+    def ExtractStage(self):
+        self.ExtractIntoDirectory(self._latestStageName, self._latestStageFilePath, self._installDir)
+
+    # Description:
+    # Extracts the portage tree into the installation directory
+    def ExtractPortage(self):
+        self.ExtractIntoDirectory(self._portageFileName, self._portageFilePath, self._portageChrootTargetDir)
+
+    # Description:
+    # Extracts the specified file into the target path
+    def ExtractIntoDirectory(self, fileName, filePath, targetPath):
+        Tools.Info("Extracting " + fileName + " into your installation directory...")
+
+        r = call(["tar", "xpf", filePath, "-C", targetPath])
+
+        if r != 0:
+            Tools.Fail("Failed to extract " + filePath + " into the installation directory.")
+
+    # Description
+    # Congratulates the user for a successful install
+    def CongratulateUser(self):
+        Tools.Print("\n" + Tools.Colorize("green", "Congratulations") + " on your new " + Tools.Colorize("pink", "Gentoo") + " install!")
+
+class Tools:
+    @classmethod
+    # Returns the string with a color to be used in bash
+    def Colorize(cls, vColor, vMessage):
+        if vColor == "red":
+            coloredMessage = "\e[1;31m" + vMessage + "\e[0;m"
+        elif vColor == "yellow":
+            coloredMessage = "\e[1;33m" + vMessage + "\e[0;m"
+        elif vColor == "green":
+            coloredMessage = "\e[1;32m" + vMessage + "\e[0;m"
+        elif vColor == "cyan":
+            coloredMessage = "\e[1;36m" + vMessage + "\e[0;m"
+        elif vColor == "purple":
+            coloredMessage = "\e[1;34m" + vMessage + "\e[0;m"
+        elif vColor == "white":
+            coloredMessage = "\e[1;37m" + vMessage + "\e[0;m"
+        elif vColor == "pink":
+            coloredMessage = "\e[1;35m" + vMessage + "\e[0;m"
+        elif vColor == "none":
+            coloredMessage = vMessage
+
+        return coloredMessage
+
+    @classmethod
+    # Prints a message through the shell
+    def Print(cls, vMessage):
+        call(["echo", "-e", vMessage])
+
+    # Used for displaying information
+    @classmethod
+    def Info(cls, vMessage):
+        call(["echo", "-e", cls.Colorize("green", "[*] ") + vMessage])
+
+    # Used for input (questions)
+    @classmethod
+    def Question(cls, vQuestion):
+        return input(vQuestion)
+
+    @classmethod
+    # Used for warnings
+    def Warn(cls, vMessage):
+        call(["echo", "-e", cls.Colorize("yellow", "[!] ") + vMessage])
+
+    @classmethod
+    # Used for flags (aka using zfs, luks, etc)
+    def Flag(cls, vFlag):
+        call(["echo", "-e", cls.Colorize("purple", "[+] ") + vFlag])
+
+    @classmethod
+    # Used for options
+    def Option(cls, vOption):
+        call(["echo", "-e", cls.Colorize("cyan", "[>] ") + vOption])
+
+    @classmethod
+    # Used for errors
+    def Fail(cls, vMessage):
+        cls.Print(cls.Colorize("red", "[#] ") + vMessage)
+        cls.NewLine()
+        quit(1)
+
+    @classmethod
+    # Prints empty line
+    def NewLine(cls):
+        print("")
+
+# Retrieves and retains parameter data
+class ParameterUtility:
+    def __init__(self):
+        # Directory where we want to install the stage
+        self._chrootDir = ""
+
+        # Choice
+        self._choice = ""
+
+    def GetChrootDir(self):
+        return self._chrootDir
+
+    def SetChrootDir(self, chrootDir):
+        self._chrootDir = chrootDir
+
+    def GetChoice(self):
+        return self._choice
+
+    # Checks parameters and running user
+    def ParseParameters(self):
+        user = check_output(["whoami"], universal_newlines=True).strip()
+
+        if user != "root":
+            Tools.Fail("This program must be ran as root")
+
+        arguments = sys.argv[1:]
+
+        if len(arguments) >= 1:
+            self._chrootDir = arguments[0]
+
+            # If the user passed in a choice, use it as well.
+            if len(arguments) == 2:
+                self._choice = arguments[1]
+        else:
+            Tools.Fail("Usage: toostrap <install dir>")
+
+if __name__ == "__main__":
+    s = Strapper()
+    s.Main()

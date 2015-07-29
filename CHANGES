@@ -1,3 +1,11 @@
+2.0.0
+-------
+- Major rewrite in Python 3 to critical components
+- Clean ups throughout all the tools and updated documentation
+- Relicensed to the Mozilla Public License 2.0
+- Removed Funtoo related code paths
+- Removed files and scripts that are no longer needed.
+
 v1.0.6
 -------
 - Removes 'i' attribute from ldlinux.sys so the script can delete the old
@@ -32,8 +40,8 @@ v1.0.3
 - Added the ability to pick the desired Gentoo/Funtoo flavor through a menu
 - Application has been renamed to "Bliss Toolkit" to signify the switch from
   an "installer" to just a set of scripts.
-- Main script files have been renamed to "toostrap", "toochroot", 
-  "extlinux-install". The switch to a set of scripts idea and names were 
+- Main script files have been renamed to "toostrap", "toochroot",
+  "extlinux-install". The switch to a set of scripts idea and names were
   inspired from Arch Linux.
 
 v1.0.2

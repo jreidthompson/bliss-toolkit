@@ -1,25 +1,17 @@
-Bliss Toolkit v1.0.6
+Bliss Toolkit v2.0.0
 Jonathan Vasquez <jvasquez1011@gmail.com>
-For Gentoo & Funtoo Linux
+Designed for Gentoo Linux
 
-Distributed under the ISC license which can be found in the LICENSE file.
+Licensed under the Mozilla Public License 2.0 which can be found in the LICENSE file.
 
-These are a set of scripts that facilitates installing Gentoo or Funtoo Linux
-on your computer.
-
-I've provided the default sysresccd kernel config with ALSA/Video stuff enabled.
-(Not everything was enabled but Intel HD Audio was).
+These are a set of scripts that facilitates installing Gentoo Linux on your computer.
 
 Included scripts:
 
-1. 'beforemath' - Creates base directories (like home, boot, if you use)
-2. 'toomount' - Mounts directories to PREFIX
-3. 'toostrap' - Asks you which Gentoo/Funtoo stage you want, and it downloads
+1. 'toostrap' - Asks you which Gentoo stage you want, and it downloads
    it with the corresponding latest portage. It then extracts it into the
-   target PREFIX declared in resources/variables.sh
-4. 'aftermath' - Copies network config, kernel config, fstab, etc, to PREFIX
-5. 'extlinux-install' - Installs the extlinux bootloader to the passed drive
-6. 'toochroot' - Cleanly chroots into the PREFIX
-7. 'tooumount' - Umounts directories in PREFIX
+   target directory.
+2. 'extlinux-install' - Installs the extlinux bootloader to the passed drive
+3. 'toochroot' - Cleanly chroots into the target directory.
 
 For more information/instructions check the USAGE file.

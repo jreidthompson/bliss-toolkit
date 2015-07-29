@@ -1,14 +1,40 @@
 #!/bin/bash
 
-# Copyright (C) 2012 Jonathan Vasquez <jvasquez1011@gmail.com>
+# Copyright 2012-2015 Jonathan Vasquez <jvasquez1011@gmail.com>
 #
-# Distributed under the ISC license which can be found in the LICENSE file.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Import functions
-source resources/variables.sh
+_ChrootDir="$1"
 
-mount --bind /proc ${PREFIX}/proc
-mount --bind /dev ${PREFIX}/dev
-mount --bind /sys ${PREFIX}/sys
+if [[ -z "${_ChrootDir}" ]]; then
+    echo "You must pass the directory you want to chroot into."
+    exit 1
+fi
 
-env -i HOME=/root TERM=$TERM chroot ${PREFIX} /bin/bash --login
+mount --rbind /proc ${_ChrootDir}/proc
+mount --rbind /dev ${_ChrootDir}/dev
+mount --rbind /sys ${_ChrootDir}/sys
+
+# Copy over network config
+cp -f /etc/resolv.conf ${_ChrootDir}/etc
+
+# Copy over zpool.cache (if exists)
+_ZpoolCachePath="/etc/zfs/zpool.cache"
+
+if [[ -f "${_ZpoolCachePath}" ]]; then
+    _ZpoolCacheChrootPath="${_ChrootDir}${_ZpoolCachePath}"
+
+    if [[ ! -d ${_ZpoolCacheChrootPath} ]]; then
+        mkdir -p "$(dirname ${_ZpoolCacheChrootPath})"
+    fi
+
+    cp -f "${_ZpoolCachePath}" "${_ZpoolCacheChrootPath}"
+fi
+
+echo "Chrooting ..."
+env -i HOME=/root TERM=$TERM chroot ${_ChrootDir} /bin/bash --login
+
+echo "Unchrooting ..."
+umount -l ${_ChrootDir}/{proc,dev,sys}

@@ -1,3 +1,10 @@
+2.1.0
+-------
+- Fixed minor bug where the "portage-latest.xz" file would be attempted
+  to be checked for a stale date even if the file didn't exist in the "files" dir.
+- The application will now verify the checksums for both the stage and portage files
+  to guarantee that they are not corrupted.
+
 2.0.0
 -------
 - Major rewrite in Python 3 to critical components

@@ -20,7 +20,7 @@ class Strapper:
         self._author = "Jonathan Vasquez"
         self._email = "jvasquez1011@gmail.com"
         self._contact =  self._author + " <" + self._email + ">"
-        self._version = "2.0.0"
+        self._version = "2.1.0"
         self._license = "Mozilla Public License 2.0"
 
         self._paramUtil = ParameterUtility()
@@ -34,18 +34,28 @@ class Strapper:
         self._defaultFlavor = "1" # Gentoo [x86_64]
 
         self._portageFileName = "portage-latest.tar.xz"
-        self._portageUrl = "http://distfiles.gentoo.org/releases/snapshots/current/" + self._portageFileName
+        self._portageChecksumFileName = self._portageFileName + ".md5sum"
+        self._portageBaseUrl = "http://distfiles.gentoo.org/snapshots/"
+        self._portageUrl = self._portageBaseUrl + self._portageFileName
+        self._portageChecksumUrl = self._portageBaseUrl + self._portageChecksumFileName
         self._portageFilePath = self._filesDir + "/" + self._portageFileName
+        self._portageChecksumFilePath = self._filesDir + "/" + self._portageChecksumFileName
         self._portageChrootTargetDir = self._installDir + "/usr"
 
         self._latestStageTextFileName = "latest-stage3.txt"
         self._latestStageTextFilePath = self._filesDir + "/" + self._latestStageTextFileName
 
         self._stageArch = ""
-        self._latestStageName = ""
+
         self._latestStageDate = ""
         self._latestStageDateAndName = ""
+        self._latestStageName = ""
+        self._latestStageBaseUrl = ""
+        self._latestStageUrl = ""
         self._latestStageFilePath = ""
+        self._latestStageChecksumName = ""
+        self._latestStageChecksumUrl = ""
+        self._latestStageChecksumFilePath = ""
 
     def GetDesiredFlavor(self):
         return self._desiredFlavor
@@ -62,17 +72,59 @@ class Strapper:
     def Main(self):
         self.PrintHeader()
         self.GetDesiredFlavorFromUser()
-        self.DownloadFileIfNecessary(self.CalculateLatestStage(), self._latestStageName)
-        self.CheckAndDeleteIfPortageIsOld()
-        self.DownloadFileIfNecessary(self._portageUrl, self._portageFileName)
+        self.AcquireAndCheckStage()
+        self.AcquireAndCheckPortage()
         self.VerifyInstallDirectoryExists()
         self.ExtractStage()
         self.ExtractPortage()
         self.CongratulateUser()
 
+    # Description:
+    # Downloads and Verifies the Stage
+    def AcquireAndCheckStage(self):
+        self.CalculateLatestStage()
+        self.DownloadFileIfNecessary(self._latestStageUrl, self._latestStageName)
+        self.DownloadFileIfNecessary(self._latestStageChecksumUrl, self._latestStageChecksumName)
+        self.VerifyStageChecksum()
+
+    # Description:
+    # Downloads and Verifies the Portage Tree
+    def AcquireAndCheckPortage(self):
+        self.CheckAndDeleteIfPortageIsOld()
+        self.DownloadFileIfNecessary(self._portageUrl, self._portageFileName)
+        self.DownloadFileIfNecessary(self._portageChecksumUrl, self._portageChecksumFileName)
+        self.VerifyPortageChecksum()
+
     def PrintMenu(self):
         Tools.Print(Tools.Colorize("green", "Stable"))
         print("1. Gentoo [x86_64]")
+
+     # Description:
+    # Makes sure that the files are not corrupted
+    def VerifyFileChecksum(self, cmd, checksumFilePath):
+        originalDir = os.getcwd()
+        os.chdir(self._filesDir)
+        r = call(cmd, shell=True)
+        os.chdir(originalDir)
+
+        if r != 0:
+            Tools.Fail("The corresponding checksum in the " + checksumFilePath + " file has failed.")
+
+    # Description:
+    # Makes sure that the stage file is not corrupted
+    def VerifyStageChecksum(self):
+        Tools.Info("Making sure that the stage file isn't corrupted...")
+        cmd = "sha512sum -c " + self._latestStageChecksumFilePath + " | grep ': OK'"
+        self.VerifyFileChecksum(cmd, self._latestStageChecksumFilePath)
+        Tools.NewLine()
+
+    # Description:
+    # Makes sure that the portage file is not corrupted
+    def VerifyPortageChecksum(self):
+        Tools.Info("Make sure that the portage file isn't corrupted...")
+        cmd = "md5sum -c " + self._portageChecksumFilePath + " | grep ': OK'"
+        self.VerifyFileChecksum(cmd, self._portageChecksumFilePath)
+        Tools.NewLine()
 
     # Description:
     # Message that will be displayed at the top of the screen
@@ -108,8 +160,14 @@ class Strapper:
     # Description:
     # Checks to see if the portage file is old. If it is, we will remove it so that a new one can be downloaded.
     def CheckAndDeleteIfPortageIsOld(self):
+        if not os.path.exists(self._portageFilePath):
+            return
+
         if self.IsPortageFileOld():
             os.remove(self._portageFilePath)
+
+            if os.path.exists(self._portageChecksumFilePath):
+                os.remove(self._portageChecksumFilePath)
 
     # Description:
     # This just downloads the latest stage3 text file and figures out what the url is for
@@ -135,9 +193,7 @@ class Strapper:
         else:
             call(["wget", "--directory-prefix", self._filesDir, url])
 
-        self._latestStageDateAndName = self.ParseLatestStageDateAndName()
-
-        return urlPrefix + self._latestStageDateAndName
+        self.ParseLatestStageDateAndName(urlPrefix)
 
     # Description:
     # Parses the latest stage3 text file in order to discover what directory and stage name
@@ -145,18 +201,24 @@ class Strapper:
     #
     # Returns:
     # A string containing the date and stage name of the latest stage.
-    def ParseLatestStageDateAndName(self):
+    def ParseLatestStageDateAndName(self, urlPrefix):
         cmd = 'grep "stage3-' + self._stageArch + '-[0-9]*.tar.bz2" ' + self._latestStageTextFilePath + ' | cut -d " " -f 1'
         r = check_output(cmd, shell=True, universal_newlines=True).strip()
 
         parts = r.split("/")
+
         self._latestStageDate = parts[0]
         self._latestStageName = parts[1]
         self._latestStageFilePath = self._filesDir + "/" + self._latestStageName
+        self._latestStageChecksumName = self._latestStageName + ".DIGESTS"
+        self._latestStageChecksumFilePath = self._filesDir + "/" + self._latestStageChecksumName
+        self._latestStageBaseUrl = urlPrefix + self._latestStageDate + "/"
+        self._latestStageChecksumUrl = self._latestStageBaseUrl + self._latestStageChecksumName
 
         Tools.Print("Stage Date: " + Tools.Colorize("red", self._latestStageDate) + "\n")
 
-        return r
+        self._latestStageDateAndName = r
+        self._latestStageUrl = urlPrefix + self._latestStageDateAndName
 
     # Description:
     # Calculates whether or not the latest-stage3.txt file is stale.

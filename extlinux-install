@@ -6,8 +6,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-Drive=$1
-ChrootDir=$2
+Drive="$1"
+ChrootDir="$2"
 
 # Check to see if a drive was given
 if [[ -z "${Drive}" ]] || [[ -z "${ChrootDir}" ]]; then
@@ -16,26 +16,26 @@ if [[ -z "${Drive}" ]] || [[ -z "${ChrootDir}" ]]; then
 fi
 
 # Install extlinux bootloader
-echo "Installing extlinux bootloader"
+echo "Installing extlinux bootloader ..."
 
 # Bootloader Directory
 LoaderDir="${ChrootDir}/boot/extlinux"
 
 if [[ -d "${LoaderDir}" ]]; then
-    chattr -i ${LoaderDir}/ldlinux.sys
-    rm -rf ${LoaderDir}
+    chattr -i "${LoaderDir}"/ldlinux.sys
+    rm -rf "${LoaderDir}"
 fi
 
-mkdir -p ${LoaderDir}
+mkdir -p "${LoaderDir}"
 
 # Install bootloader and copy config and menu file
-extlinux --install ${LoaderDir}
+extlinux --install "${LoaderDir}"
 
-cp -f resources/configs/extlinux.conf ${LoaderDir}
-cp -f /usr/share/syslinux/menu.c32 ${LoaderDir}
+cp -f examples/bootloader/extlinux.conf "${LoaderDir}"
+cp -f /usr/share/syslinux/{libutil,menu}.c32 "${LoaderDir}"
 
 # Set BIOS Legacy Flag
-sgdisk ${Drive} --attributes=1:set:2
+sgdisk "${Drive}" --attributes=1:set:2
 
 # Flash GPT/MBR file to drive
-dd if=/usr/share/syslinux/gptmbr.bin of=${Drive}
+dd if=/usr/share/syslinux/gptmbr.bin of="${Drive}"

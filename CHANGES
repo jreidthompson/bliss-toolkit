@@ -1,3 +1,28 @@
+2.2.0
+-------
+toostrap:
+- New parameters were added (from the PrintUsage function):
+
+    Format: toostrap -d <chroot dir>
+
+    > -d - Chroot Directory
+    > -c - Desired Choice [optional]
+    > -p - Download and install latest Portage tree [optional]
+    > -f - Files Directory [optional]
+    > -h - This help message [optional]
+
+- You can now have a central 'files' directory by using the '-f' flag
+- Downloading portage into a new chroot is now optional. You must use the '-p' flag
+  if you want the portage snapshot to be downloaded and installed. By default only the
+  stage3 will be downloaded and installed.
+
+extlinux-install:
+- Included a default bootloader config for extlinux in the 'examples' dir. This also
+  fixes a bug where the script was looking for a non-existent bootloader example config.
+
+toochroot:
+- Small cleanups
+
 2.1.0
 -------
 - Fixed minor bug where the "portage-latest.xz" file would be attempted

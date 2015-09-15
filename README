@@ -1,15 +1,15 @@
-Bliss Toolkit v2.1.0
+Bliss Toolkit v2.2.0
 Jonathan Vasquez <jvasquez1011@gmail.com>
-Designed for Gentoo Linux
+Mozilla Public License 2.0 
 
-Licensed under the Mozilla Public License 2.0 which can be found in the LICENSE file.
+Designed for Gentoo Linux
 
 These are a set of scripts that facilitates installing Gentoo Linux on your computer.
 
 Included scripts:
 
-1. 'toostrap' - Asks you which Gentoo stage you want, and it downloads
-   it with the corresponding latest portage. It then extracts it into the
+1. 'toostrap' - Asks you which Gentoo stage you want, (optional) downloads
+   it with the corresponding latest portage snapshot. It then extracts it into the
    target directory.
 2. 'extlinux-install' - Installs the extlinux bootloader to the passed drive
 3. 'toochroot' - Cleanly chroots into the target directory.

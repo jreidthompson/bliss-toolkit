@@ -16,19 +16,27 @@ from datetime import timedelta
 class Strapper:
     def __init__(self):
         # Application Info
-        self._appName = "Bliss Toolkit"
+        self._appName = "Toostrap"
         self._author = "Jonathan Vasquez"
         self._email = "jvasquez1011@gmail.com"
         self._contact =  self._author + " <" + self._email + ">"
-        self._version = "2.1.0"
+        self._version = "2.2.0"
         self._license = "Mozilla Public License 2.0"
 
         self._paramUtil = ParameterUtility()
         self._paramUtil.ParseParameters()
+        self._downloadPortage = self._paramUtil.ShouldDownloadPortage()
         self._installDir = self._paramUtil.GetChrootDir()
 
         self._home = os.getcwd()
-        self._filesDir = self._home + "/files"
+
+        # Gets Files Directory
+        self._filesDir = os.path.abspath(self._paramUtil.GetFilesDirectory())
+
+        if not self._paramUtil.GetFilesDirectory():
+            self._filesDir = self._home + "/files"
+
+        self.CheckIfDirectoryExists(self._filesDir)
 
         self._desiredFlavor = "0"
         self._defaultFlavor = "1" # Gentoo [x86_64]
@@ -70,13 +78,20 @@ class Strapper:
         return self._stageArch
 
     def Main(self):
+        self.VerifyInstallDirectoryExists()
+
         self.PrintHeader()
         self.GetDesiredFlavorFromUser()
         self.AcquireAndCheckStage()
-        self.AcquireAndCheckPortage()
-        self.VerifyInstallDirectoryExists()
+
+        if self._downloadPortage == 1:
+            self.AcquireAndCheckPortage()
+
         self.ExtractStage()
-        self.ExtractPortage()
+
+        if self._downloadPortage == 1:
+            self.ExtractPortage()
+
         self.CongratulateUser()
 
     # Description:
@@ -283,6 +298,12 @@ class Strapper:
         if r != 0:
             Tools.Fail("Failed to extract " + filePath + " into the installation directory.")
 
+    # Description:
+    # Checks to see if a directory exists
+    def CheckIfDirectoryExists(self, directoryPath):
+        if not os.path.exists(directoryPath):
+            Tools.Fail("The following directory does not exist: " + directoryPath)
+
     # Description
     # Congratulates the user for a successful install
     def CongratulateUser(self):
@@ -353,6 +374,16 @@ class Tools:
     def NewLine(cls):
         print("")
 
+    @classmethod
+    # Prints the usage information
+    def PrintUsage(cls):
+        print("Format: toostrap -d <chroot dir>\n")
+        print("-d - Chroot Directory")
+        print("-c - Desired Choice [optional]")
+        print("-p - Download and install latest Portage tree [optional]")
+        print("-f - Files Directory [optional]")
+        print("-h - This help message [optional]")
+
 # Retrieves and retains parameter data
 class ParameterUtility:
     def __init__(self):
@@ -362,6 +393,12 @@ class ParameterUtility:
         # Choice
         self._choice = ""
 
+        # Download Portage?
+        self._downloadPortage = 0
+
+        # Files Directory
+        self._filesDirectory = ""
+
     def GetChrootDir(self):
         return self._chrootDir
 
@@ -370,6 +407,12 @@ class ParameterUtility:
 
     def GetChoice(self):
         return self._choice
+
+    def ShouldDownloadPortage(self):
+        return self._downloadPortage
+
+    def GetFilesDirectory(self):
+        return self._filesDirectory
 
     # Checks parameters and running user
     def ParseParameters(self):
@@ -381,13 +424,39 @@ class ParameterUtility:
         arguments = sys.argv[1:]
 
         if len(arguments) >= 1:
-            self._chrootDir = arguments[0]
+            for i in range(len(arguments)):
+                # Set the chroot dir path
+                if arguments[i] == "-d":
+                    try:
+                        self._chrootDir = arguments[i+1]
+                    except IndexError:
+                        Tools.Fail("No chroot dir was passed to -d")
 
-            # If the user passed in a choice, use it as well.
-            if len(arguments) == 2:
-                self._choice = arguments[1]
+                # Set the user choice
+                if arguments[i] == "-c":
+                    try:
+                        self._choice = arguments[i+1]
+                    except IndexError:
+                        Tools.Fail("No choice was passed to -c")
+
+                # Download Portage
+                if arguments[i] == "-p":
+                    self._downloadPortage = 1
+
+                # Files Directory
+                if arguments[i] == "-f":
+                    try:
+                        self._filesDirectory = arguments[i+1]
+                    except IndexError:
+                        Tools.Fail("No choice was passed to -f")
+
+                # Help Message
+                if arguments[i] == "-h":
+                    Tools.PrintUsage()
+                    exit(0)
         else:
-            Tools.Fail("Usage: toostrap <install dir>")
+            Tools.PrintUsage()
+            exit(1)
 
 if __name__ == "__main__":
     s = Strapper()

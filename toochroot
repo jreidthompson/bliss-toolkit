@@ -13,12 +13,16 @@ if [[ -z "${_ChrootDir}" ]]; then
     exit 1
 fi
 
-mount --rbind /proc ${_ChrootDir}/proc
-mount --rbind /dev ${_ChrootDir}/dev
-mount --rbind /sys ${_ChrootDir}/sys
+mount --rbind /proc "${_ChrootDir}"/proc
+mount --rbind /dev "${_ChrootDir}"/dev
+mount --rbind /sys "${_ChrootDir}"/sys
 
 # Copy over network config
-cp -f /etc/resolv.conf ${_ChrootDir}/etc
+_ResolvConfig="/etc/resolv.conf"
+
+if [[ ! -f "${_ResolvConfig}" ]]; then
+    cp -f "${_ResolvConfig}" "${_ChrootDir}"/etc
+fi
 
 # Copy over zpool.cache (if exists)
 _ZpoolCachePath="/etc/zfs/zpool.cache"
@@ -26,7 +30,7 @@ _ZpoolCachePath="/etc/zfs/zpool.cache"
 if [[ -f "${_ZpoolCachePath}" ]]; then
     _ZpoolCacheChrootPath="${_ChrootDir}${_ZpoolCachePath}"
 
-    if [[ ! -d ${_ZpoolCacheChrootPath} ]]; then
+    if [[ ! -d "${_ZpoolCacheChrootPath}" ]]; then
         mkdir -p "$(dirname ${_ZpoolCacheChrootPath})"
     fi
 
@@ -34,7 +38,7 @@ if [[ -f "${_ZpoolCachePath}" ]]; then
 fi
 
 echo "Chrooting ..."
-env -i HOME=/root TERM=$TERM chroot ${_ChrootDir} /bin/bash --login
+env -i HOME=/root TERM="${TERM}" chroot "${_ChrootDir}" /bin/bash --login
 
 echo "Unchrooting ..."
-umount -l ${_ChrootDir}/{proc,dev,sys}
+umount -l "${_ChrootDir}"/{proc,dev,sys}
